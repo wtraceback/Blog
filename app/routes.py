@@ -21,11 +21,11 @@ def login():
     if form.validate_on_submit():
         user = Admin.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
+            flash('Invalid username or password', 'warning')
             return redirect(url_for('login'))
 
         login_user(user, remember=form.remember_me.data)
-        flash('Login successful')
+        flash('Login successful', 'success')
         return redirect(url_for('index'))
     return render_template('login.html', title='Log in', form=form)
 
