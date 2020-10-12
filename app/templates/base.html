@@ -1,32 +1,49 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-    <head>
-        <meta charset="utf-8">
-        <title>{{ title }}</title>
-    </head>
-    <body>
-        <div>
-            Personal-Blog: 
-            <a href="{{ url_for('index') }}">Home</a>
-            {% if current_user.is_anonymous %}
-                <a href="{{ url_for('login') }}">Login</a>
-            {% else %}
-                <a href="{{ url_for('logout') }}">Logout</a>
-            {% endif %}
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block navbar %}
+    <div class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{{ url_for('index') }}">Personal-Blog</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    {% if current_user.is_anonymous %}
+                        <li><a href="{{ url_for('login') }}">Login</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
-        <hr>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
         {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
+            {% if messages %}
                 {% for message in messages %}
-                    <li>
+                    <div class="alert alert-info" role="alert">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
                         {{ message }}
-                    </li>
+                    </div>
                 {% endfor %}
-            </ul>
-        {% endif %}
+            {% endif %}
         {% endwith %}
-        {% block content %}
+
+        {% block page_content %}
         {% endblock %}
-    </body>
-</html>
+    </div>
+{% endblock %}
