@@ -1,0 +1,19 @@
+{% if posts %}
+    {% for post in posts %}
+        <div class="post">
+            <h3>
+                {{ post.title }}
+            </h3>
+            <p>
+                {{ post.body }}
+            </p>
+            <small>
+                {{ post.timestamp }}
+            </small>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="tip">
+        <h5>No posts yet.</h5>
+    </div>
+{% endif %}
