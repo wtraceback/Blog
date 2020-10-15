@@ -1,4 +1,5 @@
-{% extends "bootstrap/base.html" %}
+{% extends "origin.html" %}
+{% from 'bootstrap/nav.html' import render_nav_item %}
 
 {% block title %}
     {{ title }}
@@ -9,30 +10,21 @@
 {% endblock%}
 
 {% block navbar %}
-    <div class="navbar navbar-inverse" role="navigation">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="{{ url_for('index') }}">Personal-Blog</a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a href="{{ url_for('index') }}">Home</a></li>
-                    <li><a href="{{ url_for('about') }}">About</a></li>
-                    {% if current_user.is_anonymous %}
-                        <li><a href="{{ url_for('login') }}">Login</a></li>
-                    {% else %}
-                        <li><a href="{{ url_for('logout') }}">Logout</a></li>
-                    {% endif %}
+            <a class="navbar-brand" href="{{ url_for('index') }}">Personal-Blog</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+                    aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarColor01">
+                <ul class="navbar-nav mr-auto">
+                    {{ render_nav_item('index', 'Home') }}
+                    {{ render_nav_item('about', 'About') }}
                 </ul>
             </div>
         </div>
-    </div>
+    </nav>
 {% endblock %}
 
 {% block content %}
@@ -53,15 +45,20 @@
 
         {% block footer %}
             <footer>
-                <hr>
-                <p>
+                <p class="float-left">
                     <small>
                         &copy; 2020
                         <a href="https://github.com/wtraceback/Personal-Blog" title="Fork me on GitHub">whxcer - GitHub</a>
                     </small>
                 </p>
-                <p>
-                    <a href="#">Back to top</a>
+                <p class="float-right">
+                    <small>
+                        {% if current_user.is_anonymous %}
+                            <a href="{{ url_for('login') }}">Login</a>
+                        {% else %}
+                            <a href="{{ url_for('logout') }}">Logout</a>
+                        {% endif %}
+                    </small>
                 </p>
             </footer>
         {% endblock %}
