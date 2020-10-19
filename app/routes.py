@@ -3,7 +3,7 @@ from flask import render_template, redirect, flash, url_for
 from app.forms import LoginForm
 from flask_login import current_user, login_user, logout_user
 from flask_login import login_required
-from app.models import Admin, Post
+from app.models import Admin, Post, Category
 
 
 @app.route('/')
@@ -41,3 +41,9 @@ def logout():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+
+@app.context_processor
+def make_template_context():
+    categories = Category.query.order_by(Category.name).all()
+    return dict(categories=categories)

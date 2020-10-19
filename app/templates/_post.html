@@ -6,13 +6,20 @@
                     {{ post.title }}
                 </a>
             </h3>
+
             <p>
                 {{ post.body|striptags|truncate }}
                 <small><a href="#">Read More</a></small>
             </p>
+
             <small>
+                Category: <a href="#">{{ post.category.name }}</a>
                 <span class="float-right">{{ moment(post.timestamp).format('LL') }}</span>
             </small>
+
+            {% if not loop.last %}
+                <hr>
+            {% endif %}
         </div>
     {% endfor %}
 {% else %}
