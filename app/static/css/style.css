@@ -1,0 +1,15 @@
+.page-header {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+footer {
+    margin-top: 30px;
+    padding: 10px 0 40px;
+    color: #999;
+    border-top: 1px solid #e5e5e5;
+}
+
+.sidebar {
+    padding-left: 30px
+}

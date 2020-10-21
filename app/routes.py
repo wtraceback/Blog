@@ -54,3 +54,9 @@ def show_category(category_id):
     category = Category.query.get_or_404(category_id)
     posts = Post.query.filter_by(category_id=category_id).all()
     return render_template('category.html', category=category, posts=posts)
+
+
+@app.route('/post/<int:post_id>')
+def show_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('post.html', post=post)
