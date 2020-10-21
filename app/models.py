@@ -34,9 +34,15 @@ class Post(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     category = db.relationship('Category', back_populates='posts')
 
+    def __repr__(self):
+        return '<Post {}>'.format(self.title)
+
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=True)
 
     posts = db.relationship('Post', back_populates='category')
+
+    def __repr__(self):
+        return '<Category {}>'.format(self.name)

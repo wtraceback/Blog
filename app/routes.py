@@ -47,3 +47,10 @@ def about():
 def make_template_context():
     categories = Category.query.order_by(Category.name).all()
     return dict(categories=categories)
+
+
+@app.route('/category/<int:category_id>')
+def show_category(category_id):
+    category = Category.query.get_or_404(category_id)
+    posts = Post.query.filter_by(category_id=category_id).all()
+    return render_template('category.html', category=category, posts=posts)
