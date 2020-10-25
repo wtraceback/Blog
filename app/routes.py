@@ -1,9 +1,10 @@
-from app import app
+from app import app, db
 from flask import render_template, redirect, flash, url_for
 from app.forms import LoginForm
 from flask_login import current_user, login_user, logout_user
 from flask_login import login_required
 from app.models import Admin, Post, Category
+import click
 
 
 @app.route('/')
@@ -60,3 +61,23 @@ def show_category(category_id):
 def show_post(post_id):
     post = Post.query.get_or_404(post_id)
     return render_template('post.html', post=post)
+
+
+@app.cli.command()
+@click.option('--category', default=10, help='Quantity of categories, default is 10.')
+@click.option('--post', default=50, help='Quantity of posts, default is 50.')
+def forge(category, post):
+    """Generate fake data."""
+    from app.fakes import fake_admin, fake_categories, fake_posts
+
+    db.drop_all()
+    db.create_all()
+
+    click.echo('Generating the administrator...')
+    fake_admin()
+
+    click.echo('Generating {} categories...'.format(category))
+    fake_categories(category)
+
+    click.echo('Generating {} posts...'.format(post))
+    fake_posts(post)
