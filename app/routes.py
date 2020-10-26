@@ -1,5 +1,5 @@
 from app import app, db
-from flask import render_template, redirect, flash, url_for
+from flask import render_template, redirect, flash, url_for, current_app, request
 from app.forms import LoginForm
 from flask_login import current_user, login_user, logout_user
 from flask_login import login_required
@@ -10,8 +10,11 @@ import click
 @app.route('/')
 @app.route('/index')
 def index():
-    posts = Post.query.order_by(Post.timestamp.desc()).all()
-    return render_template('index.html', title='Personal-Blog', posts=posts)
+    page = request.args.get('page', 1, type=int)
+    per_page = app.config['POSTS_PER_PAGE']
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page, per_page, False)
+    posts = pagination.items
+    return render_template('index.html', title='Personal-Blog', pagination=pagination, posts=posts)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -53,8 +56,12 @@ def make_template_context():
 @app.route('/category/<int:category_id>')
 def show_category(category_id):
     category = Category.query.get_or_404(category_id)
-    posts = Post.query.filter_by(category_id=category_id).all()
-    return render_template('category.html', category=category, posts=posts)
+    page = request.args.get('page', 1, type=int)
+    per_page = app.config['POSTS_PER_PAGE']
+    # with_parent(instance)传入模型类实例作为参数，返回和这个实例相关联的对象
+    pagination = Post.query.with_parent(category).order_by(Post.timestamp.desc()).paginate(page, per_page, False)
+    posts = pagination.items
+    return render_template('category.html', category=category, pagination=pagination, posts=posts)
 
 
 @app.route('/post/<int:post_id>')
