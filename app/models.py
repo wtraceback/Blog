@@ -46,3 +46,9 @@ class Category(db.Model):
 
     def __repr__(self):
         return '<Category {}>'.format(self.name)
+
+
+class Link(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30))
+    url = db.Column(db.String(255))

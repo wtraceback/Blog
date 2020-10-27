@@ -1,7 +1,7 @@
 from faker import Faker
 import random
 from app import db
-from app.models import Admin, Post, Category
+from app.models import Admin, Post, Category, Link
 
 fake = Faker()
 
@@ -42,3 +42,14 @@ def fake_posts(count=50):
     db.session.commit()
 
 
+def fake_links():
+    google = Link(name='Google', url='#')
+    baidu = Link(name='百度', url='#')
+    linkedin = Link(name='LinkedIn', url='#')
+    douban = Link(name='豆瓣', url='#')
+    shiguang = Link(name='时光网', url='#')
+    zhihu = Link(name='知乎', url='#')
+    hackernews = Link(name='Hacker News', url='#')
+    reddit = Link(name='Reddit', url='#')
+    db.session.add_all([google, baidu, linkedin, douban, shiguang, zhihu, hackernews, reddit])
+    db.session.commit()

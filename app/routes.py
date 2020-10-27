@@ -3,7 +3,7 @@ from flask import render_template, redirect, flash, url_for, current_app, reques
 from app.forms import LoginForm
 from flask_login import current_user, login_user, logout_user
 from flask_login import login_required
-from app.models import Admin, Post, Category
+from app.models import Admin, Post, Category, Link
 import click
 
 
@@ -50,7 +50,8 @@ def about():
 @app.context_processor
 def make_template_context():
     categories = Category.query.order_by(Category.name).all()
-    return dict(categories=categories)
+    links = Link.query.order_by(Link.name).all()
+    return dict(categories=categories, links=links)
 
 
 @app.route('/category/<int:category_id>')
@@ -75,7 +76,7 @@ def show_post(post_id):
 @click.option('--post', default=50, help='Quantity of posts, default is 50.')
 def forge(category, post):
     """Generate fake data."""
-    from app.fakes import fake_admin, fake_categories, fake_posts
+    from app.fakes import fake_admin, fake_categories, fake_posts, fake_links
 
     db.drop_all()
     db.create_all()
@@ -88,3 +89,6 @@ def forge(category, post):
 
     click.echo('Generating {} posts...'.format(post))
     fake_posts(post)
+
+    click.echo('Generating links...')
+    fake_links()
