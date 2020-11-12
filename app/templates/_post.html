@@ -13,8 +13,13 @@
             </p>
 
             <small>
-                Category: <a href="{{ url_for('show_category', category_id=post.category.id) }}">{{ post.category.name }}</a>
-                <span class="float-right">{{ moment(post.timestamp).format('LL') }}</span>
+                Category:
+                <a href="{{ url_for('show_category', category_id=post.category.id) }}">
+                    {{ post.category.name }}
+                </a>
+                <span class="float-right" data-toggle="tooltip" data-placement="top" data-delay="500" data-timestamp="{{ post.timestamp }}">
+                    {{ moment(post.timestamp).format('LL') }}
+                </span>
             </small>
 
             {% if not loop.last %}
