@@ -1,13 +1,24 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Blog - Bad Request
+    Blog - 400 Error
+{% endblock %}
+
+{% block header %}
+    <h1>
+        400 Error
+    </h1>
 {% endblock %}
 
 {% block page_content %}
-    <div class="page-header">
-        <h1 class="display-3">
-            Bad Request - 400
-        </h1>
+    <div class="row">
+        <div class="col-sm-8">
+            <p>
+                Bad Request
+            </p>
+        </div>
+        <div class="col-sm-4 pl-4">
+            {% include '_sidebar.html' %}
+        </div>
     </div>
 {% endblock %}

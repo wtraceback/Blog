@@ -8,7 +8,6 @@
 {% block styles %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/cosmo.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 {% endblock%}
 
 {% block navbar %}
@@ -42,15 +41,21 @@
             {% endif %}
         {% endwith %}
 
+        <header class="my-4">
+            {% block header %}
+            {% endblock %}
+        </header>
+
+
         {% block page_content %}
         {% endblock %}
 
         {% block footer %}
-            <footer>
+            <footer class="mt-4 text-muted border-top">
                 <p class="float-left">
                     <small>
                         &copy; 2020
-                        <a href="https://github.com/wtraceback/Personal-Blog" title="Fork me on GitHub">whxcer - GitHub</a>
+                        <a target="_blank" href="https://github.com/wtraceback/Personal-Blog" title="Fork me on GitHub">whxcer - GitHub</a>
                     </small>
                 </p>
                 <p class="float-right">
