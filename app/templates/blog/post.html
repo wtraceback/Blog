@@ -11,7 +11,7 @@
     </h1>
     <small>
         Category:
-            <a href="{{ url_for('show_category', category_id=post.category.id) }}">
+            <a href="{{ url_for('blog.show_category', category_id=post.category.id) }}">
                 {{ post.category.name }}
             </a>
             <br>
@@ -25,7 +25,7 @@
             {{ post.body|safe }}
         </div>
         <div class="col-sm-4 pl-4">
-            {% include "_sidebar.html" %}
+            {% include "blog/_sidebar.html" %}
         </div>
     </div>
 {% endblock %}

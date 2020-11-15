@@ -2,19 +2,19 @@
     {% for post in posts %}
         <div class="post">
             <h3 class="text-primary">
-                <a href="{{ url_for('show_post', post_id=post.id) }}">
+                <a href="{{ url_for('blog.show_post', post_id=post.id) }}">
                     {{ post.title }}
                 </a>
             </h3>
 
             <p>
                 {{ post.body|striptags|truncate }}
-                <small><a href="{{ url_for('show_post', post_id=post.id) }}">Read More</a></small>
+                <small><a href="{{ url_for('blog.show_post', post_id=post.id) }}">Read More</a></small>
             </p>
 
             <small>
                 Category:
-                <a href="{{ url_for('show_category', category_id=post.category.id) }}">
+                <a href="{{ url_for('blog.show_category', category_id=post.category.id) }}">
                     {{ post.category.name }}
                 </a>
                 <span class="float-right" data-toggle="tooltip" data-placement="top" data-delay="500" data-timestamp="{{ post.timestamp }}">

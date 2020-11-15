@@ -13,13 +13,13 @@
 {% block page_content %}
     <div class="row">
         <div class="col-sm-8">
-            {% include '_post.html' %}
+            {% include "blog/_post.html" %}
             {% if posts %}
                 <div class="pt-5">{{ render_pagination(pagination) }}</div>
             {% endif %}
         </div>
         <div class="col-sm-4 pl-4">
-            {% include '_sidebar.html' %}
+            {% include "blog/_sidebar.html" %}
         </div>
     </div>
 {% endblock %}
