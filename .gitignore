@@ -131,3 +131,5 @@ dmypy.json
 # Automatically generated files
 .idea/
 *.db
+*.sqlite
+*.sqlite3
