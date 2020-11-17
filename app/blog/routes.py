@@ -1,6 +1,8 @@
-from flask import current_app, render_template, request
+from flask import current_app, render_template, request, flash, redirect, url_for
 from app.blog import blog_bp
-from app.models import Post, Category
+from app.models import Post, Category, Comment
+from app.forms import CommentForm
+from app import db
 
 
 @blog_bp.route('/')
@@ -32,4 +34,19 @@ def show_category(category_id):
 @blog_bp.route('/post/<int:post_id>')
 def show_post(post_id):
     post = Post.query.get_or_404(post_id)
-    return render_template('blog/post.html', post=post)
+
+    form = CommentForm()
+    if form.validate_on_submit():
+        author = form.author.data
+        email = form.email.data
+        site = form.site.data
+        body = form.body.data
+
+        comment = Comment(author=author, email=email, site=site, body=body)
+        db.session.add(comment)
+        db.session.commit()
+
+        flash('Comment published.', 'success')
+        return redirect(url_for('blog.show_post', post_id=post_id))
+
+    return render_template('blog/post.html', post=post, form=form)
