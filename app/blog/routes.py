@@ -3,6 +3,7 @@ from app.blog import blog_bp
 from app.models import Post, Category, Comment
 from app.forms import CommentForm
 from app import db
+from flask_login import current_user
 
 
 @blog_bp.route('/')
@@ -31,9 +32,19 @@ def show_category(category_id):
     return render_template('blog/category.html', category=category, pagination=pagination, posts=posts)
 
 
-@blog_bp.route('/post/<int:post_id>')
+@blog_bp.route('/post/<int:post_id>', methods=['GET', 'POST'])
 def show_post(post_id):
     post = Post.query.get_or_404(post_id)
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['BLOG_COMMENT_PER_PAGE']
+    pagination = Comment.query.with_parent(post).order_by(Comment.timestamp.desc()).paginate(page, per_page, False)
+    # pagination = Comment.query.with_parent(post).filter_by(post_id=post.id).order_by(Comment.timestamp.desc()).paginate(page, per_page, False)
+    comments = pagination.items
+
+    if current_user.is_authenticated:
+        from_admin = True
+    else:
+        from_admin = False
 
     form = CommentForm()
     if form.validate_on_submit():
@@ -42,11 +53,11 @@ def show_post(post_id):
         site = form.site.data
         body = form.body.data
 
-        comment = Comment(author=author, email=email, site=site, body=body)
+        comment = Comment(author=author, email=email, site=site, body=body, from_admin=from_admin, post_id=post_id)
         db.session.add(comment)
         db.session.commit()
 
         flash('Comment published.', 'success')
         return redirect(url_for('blog.show_post', post_id=post_id))
 
-    return render_template('blog/post.html', post=post, form=form)
+    return render_template('blog/post.html', post=post, form=form, pagination=pagination, comments=comments)

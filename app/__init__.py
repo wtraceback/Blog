@@ -52,13 +52,14 @@ def load_user(id):
 
 
 def register_template_context(app):
-    from app.models import Category, Link
+    from app.models import Admin, Category, Link
 
     @app.context_processor
     def make_template_context():
+        admin = Admin.query.first()
         categories = Category.query.order_by(Category.name).all()
         links = Link.query.order_by(Link.name).all()
-        return dict(categories=categories, links=links)
+        return dict(admin=admin, categories=categories, links=links)
 
 
 def register_commands(app):

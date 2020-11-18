@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% from 'bootstrap/form.html' import render_form %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
 
 {% block title %}
     {{ post.title }}
@@ -54,6 +55,57 @@
                 </div>
             </div>
 
+            <div id="comments" class="comments my-4">
+                <h3>
+                    {{ comments|length }} Comments
+                </h3>
+                {% if comments %}
+                    <ul class="list-group">
+                        {% for comment in comments %}
+                            <li class="list-group-item list-group-item-action flex-column">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="mb-1">
+                                        <a href="{% if comment.site %}{{ comment.site }}{% else %}#{% endif %}" target="_blank">
+                                            {% if comment.from_admin %}
+                                                {{ admin.username }}
+                                            {% else %}
+                                                {{ comment.author }}
+                                            {% endif %}
+                                        </a>
+                                        {% if comment.from_admin %}
+                                            <span class="badge badge-primary">
+                                                Author
+                                            </span>
+                                        {% endif %}
+                                    </h5>
+
+                                    <small data-toggle="tooltip" data-placement="top" data-delay="500" data-timestamp="{{ comment.timestamp }}">
+                                        {{ moment(comment.timestamp).fromNow(refresh=True) }}
+                                    </small>
+                                </div>
+
+                                <p class="mb-1">{{ comment.body }}</p>
+
+                                <div class="float-right">
+                                    <a class="btn btn-light btn-sm" href="#">
+                                        Reply
+                                    </a>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="tip">
+                        <h5>
+                            No comments.
+                        </h5>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if comments %}
+                {{ render_pagination(pagination, fragment='#comments') }}
+            {% endif %}
 
             <div class="comment-form">
                 {{ render_form(form) }}

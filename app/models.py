@@ -29,6 +29,8 @@ class Post(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     category = db.relationship('Category', back_populates='posts')
 
+    comments = db.relationship('Comment', back_populates='post')
+
     def __repr__(self):
         return '<Post {}>'.format(self.title)
 
@@ -58,6 +60,11 @@ class Comment(db.Model):
     email = db.Column(db.String(254))
     site = db.Column(db.String(255))
     body = db.Column(db.Text)
+    from_admin = db.Column(db.Boolean, default=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    post = db.relationship('Post', back_populates='comments')
 
     def __repr__(self):
         return '<author {}>'.format(self.author)

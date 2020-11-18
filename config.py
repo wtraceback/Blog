@@ -14,6 +14,7 @@ class Config(object):
     SECRET_KEY = os.getenv('SECRET_KEY', 'you-will-never-guess')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     POSTS_PER_PAGE = 10
+    BLOG_COMMENT_PER_PAGE = 10
 
     @staticmethod
     def init_app(app):
