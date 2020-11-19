@@ -27,87 +27,114 @@
             {{ post.body|safe }}
             <hr>
 
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#postLinkModal">
-                Share
-            </button>
-            <!-- Modal -->
-            <div class="modal fade" id="postLinkModal" tabindex="-1" role="dialog" aria-labelledby="postLinkModalLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="postLinkModalLabel">
-                                Permalink
-                            </h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">
-                                    &times;
-                                </span>
-                            </button>
-                        </div>
+            <div class="share-dialog">
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#postLinkModal">
+                    Share
+                </button>
+                <!-- Modal -->
+                <div class="modal fade" id="postLinkModal" tabindex="-1" role="dialog" aria-labelledby="postLinkModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="postLinkModalLabel">
+                                    Permalink
+                                </h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">
+                                        &times;
+                                    </span>
+                                </button>
+                            </div>
 
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <input class="form-control" type="text" value="{{ url_for('blog.show_post', post_id=post.id, _external=True) }}" readonly>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <input class="form-control" type="text" value="{{ url_for('blog.show_post', post_id=post.id, _external=True) }}" readonly>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="comments" class="comments my-4">
-                <h3>
-                    {{ comments|length }} Comments
-                </h3>
-                {% if comments %}
-                    <ul class="list-group">
-                        {% for comment in comments %}
-                            <li class="list-group-item list-group-item-action flex-column">
-                                <div class="d-flex justify-content-between">
-                                    <h5 class="mb-1">
-                                        <a href="{% if comment.site %}{{ comment.site }}{% else %}#{% endif %}" target="_blank">
+            <div class="comment-display-bar">
+                <div id="comments" class="comments my-4">
+                    <h3>
+                        {{ comments|length }} Comments
+                    </h3>
+                    {% if comments %}
+                        <ul class="list-group">
+                            {% for comment in comments %}
+                                <li class="list-group-item list-group-item-action flex-column">
+                                    <div class="d-flex justify-content-between">
+                                        <h5 class="mb-1">
+                                            <a href="{% if comment.site %}{{ comment.site }}{% else %}#{% endif %}" target="_blank">
+                                                {% if comment.from_admin %}
+                                                    {{ admin.username }}
+                                                {% else %}
+                                                    {{ comment.author }}
+                                                {% endif %}
+                                            </a>
                                             {% if comment.from_admin %}
-                                                {{ admin.username }}
-                                            {% else %}
-                                                {{ comment.author }}
+                                                <span class="badge badge-primary">
+                                                    Author
+                                                </span>
                                             {% endif %}
+                                            {% if comment.replied %}
+                                                <span class="badge badge-light">
+                                                    Reply
+                                                </span>
+                                            {% endif %}
+                                        </h5>
+
+                                        <small data-toggle="tooltip" data-placement="top" data-delay="500" data-timestamp="{{ comment.timestamp }}">
+                                            {{ moment(comment.timestamp).fromNow(refresh=True) }}
+                                        </small>
+                                    </div>
+
+                                    {% if comment.replied %}
+                                        <p class="alert alert-dark my-3">
+                                            {{ comment.replied.author }}:
+                                            <br>
+                                            {{ comment.replied.body }}
+                                        </p>
+                                    {% endif %}
+
+                                    <p class="mb-1">{{ comment.body }}</p>
+
+                                    <div class="float-right">
+                                        <a class="btn btn-light btn-sm" href="{{ url_for('.reply_comment', comment_id=comment.id) }}">
+                                            Reply
                                         </a>
-                                        {% if comment.from_admin %}
-                                            <span class="badge badge-primary">
-                                                Author
-                                            </span>
-                                        {% endif %}
-                                    </h5>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="tip">
+                            <h5>
+                                No comments.
+                            </h5>
+                        </div>
+                    {% endif %}
+                </div>
 
-                                    <small data-toggle="tooltip" data-placement="top" data-delay="500" data-timestamp="{{ comment.timestamp }}">
-                                        {{ moment(comment.timestamp).fromNow(refresh=True) }}
-                                    </small>
-                                </div>
-
-                                <p class="mb-1">{{ comment.body }}</p>
-
-                                <div class="float-right">
-                                    <a class="btn btn-light btn-sm" href="#">
-                                        Reply
-                                    </a>
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <div class="tip">
-                        <h5>
-                            No comments.
-                        </h5>
-                    </div>
+                {% if comments %}
+                    {{ render_pagination(pagination, fragment='#comments') }}
                 {% endif %}
             </div>
 
-            {% if comments %}
-                {{ render_pagination(pagination, fragment='#comments') }}
+            {% if request.args.get('reply') %}
+                <div class="alert alert-dark">
+                    Reply To
+                    <strong>{{ request.args.get('author') }}</strong>:
+                    <a class="float-right" href="{{ url_for('blog.show_post', post_id=post.id) }}">
+                        Cancel
+                    </a>
+                </div>
             {% endif %}
 
-            <div class="comment-form">
+            <div id="comment-form">
                 {{ render_form(form) }}
             </div>
         </div>

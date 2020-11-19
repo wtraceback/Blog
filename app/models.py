@@ -25,6 +25,7 @@ class Post(db.Model):
     title = db.Column(db.String(60))
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    can_comment = db.Column(db.Boolean, default=True)
 
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     category = db.relationship('Category', back_populates='posts')
@@ -62,9 +63,15 @@ class Comment(db.Model):
     body = db.Column(db.Text)
     from_admin = db.Column(db.Boolean, default=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    reviewed = db.Column(db.Boolean, default=False)
 
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    replied_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
+
     post = db.relationship('Post', back_populates='comments')
+    replied = db.relationship('Comment', back_populates='replies', remote_side=[id])
+
+    replies = db.relationship('Comment', back_populates='replied', cascade='all, delete-orphan')
 
     def __repr__(self):
         return '<author {}>'.format(self.author)
