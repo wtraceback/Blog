@@ -21,7 +21,7 @@ def login():
         login_user(user, remember=form.remember_me.data)
         flash('Login successful', 'success')
         return redirect(url_for('blog.index'))
-    return render_template('auth/login.html', title='Log in', form=form)
+    return render_template('auth/login.html', form=form)
 
 
 @auth_bp.route('/logout')

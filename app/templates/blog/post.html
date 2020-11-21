@@ -70,7 +70,7 @@
                                         <h5 class="mb-1">
                                             <a href="{% if comment.site %}{{ comment.site }}{% else %}#{% endif %}" target="_blank">
                                                 {% if comment.from_admin %}
-                                                    {{ admin.username }}
+                                                    {{ admin.name }}
                                                 {% else %}
                                                     {{ comment.author }}
                                                 {% endif %}
@@ -135,7 +135,7 @@
             {% endif %}
 
             <div id="comment-form">
-                {{ render_form(form) }}
+                {{ render_form(form, action=request.full_path) }}
             </div>
         </div>
         <div class="col-sm-4 pl-4">

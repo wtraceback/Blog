@@ -9,6 +9,10 @@ class Admin(db.Model, UserMixin):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    blog_title = db.Column(db.String(60))
+    blog_sub_title = db.Column(db.String(100))
+    name = db.Column(db.String(30))
+    about = db.Column(db.Text)
 
     def __repr__(self):
         return '<Admin {}>'.format(self.username)
@@ -28,9 +32,9 @@ class Post(db.Model):
     can_comment = db.Column(db.Boolean, default=True)
 
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
-    category = db.relationship('Category', back_populates='posts')
 
-    comments = db.relationship('Comment', back_populates='post')
+    category = db.relationship('Category', back_populates='posts')
+    comments = db.relationship('Comment', back_populates='post', cascade='all, delete-orphan')
 
     def __repr__(self):
         return '<Post {}>'.format(self.title)

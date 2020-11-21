@@ -1,7 +1,7 @@
 from faker import Faker
 import random
 from app import db
-from app.models import Admin, Post, Category, Link
+from app.models import Admin, Post, Category, Link, Comment
 
 fake = Faker()
 
@@ -9,7 +9,11 @@ fake = Faker()
 def fake_admin():
     admin = Admin(
         username='admin',
-        email = 'admin@example.com'
+        email='whxcer@example.com',
+        blog_title='Personal Blog',
+        blog_sub_title='blog sub title, something.',
+        name='Whxcer',
+        about="um, The man was lazy and didn't leave a profile"
     )
     admin.set_password('123456')
     db.session.add(admin)
@@ -39,6 +43,70 @@ def fake_posts(count=50):
         )
 
         db.session.add(post)
+    db.session.commit()
+
+
+def fake_comments(count=500):
+    for i in range(count):
+        comment = Comment(
+            author=fake.name(),
+            email=fake.email(),
+            site=fake.url(),
+            body=fake.sentence(),
+            timestamp=fake.date_time_this_year(),
+            reviewed=True,
+            post=Post.query.get(random.randint(1, Post.query.count()))
+        )
+        db.session.add(comment)
+
+    salt = int(count * 0.1)
+    for i in range(salt):
+        # unreviewed comments
+        comment = Comment(
+            author=fake.name(),
+            email=fake.email(),
+            site=fake.url(),
+            body=fake.sentence(),
+            timestamp=fake.date_time_this_year(),
+            reviewed=False,
+            post=Post.query.get(random.randint(1, Post.query.count()))
+        )
+        db.session.add(comment)
+
+        # from admin
+        comment = Comment(
+            author='Whxcer',
+            email='whxcer@example.com',
+            site='example.com',
+            body=fake.sentence(),
+            timestamp=fake.date_time_this_year(),
+            from_admin=True,
+            reviewed=True,
+            post=Post.query.get(random.randint(1, Post.query.count()))
+        )
+        db.session.add(comment)
+    db.session.commit()
+
+    # replies
+    for i in range(salt):
+        # 为了保证回复的是同一篇文章下的评论（没法保证日期顺序：评论和回复的时间）
+        # post = Post.query.get(random.randint(1, Post.query.count()))
+        # post_comments = Comment.query.with_parent(post).all()
+        # replied = random.choice(post_comments)
+
+        comment = Comment(
+            author=fake.name(),
+            email=fake.email(),
+            site=fake.url(),
+            body=fake.sentence(),
+            timestamp=fake.date_time_this_year(),
+            reviewed=True,
+            post=Post.query.get(random.randint(1, Post.query.count())),
+            replied=Comment.query.get(random.randint(1, Comment.query.count()))
+            # post=post,
+            # replied=replied
+        )
+        db.session.add(comment)
     db.session.commit()
 
 

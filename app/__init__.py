@@ -37,6 +37,7 @@ def create_app(config_name=None):
     from app.errors import errors_bp
     app.register_blueprint(errors_bp)
 
+    register_shell_context(app)
     register_template_context(app)
     register_commands(app)
 
@@ -49,6 +50,15 @@ login.login_message = 'Please log in'
 def load_user(id):
     from app.models import Admin
     return Admin.query.get(int(id))
+
+
+def register_shell_context(app):
+    from app.models import Admin, Post, Category, Comment
+
+    @app.shell_context_processor
+    def make_shell_context():
+        # return {'db': db, 'Admin': Admin, 'Post': Post, 'Category': Category, 'Comment': Comment}
+        return dict(db=db, Admin=Admin, Post=Post, Category=Category, Comment=Comment)
 
 
 def register_template_context(app):
@@ -66,9 +76,10 @@ def register_commands(app):
     @app.cli.command()
     @click.option('--category', default=10, help='Quantity of categories, default is 10.')
     @click.option('--post', default=50, help='Quantity of posts, default is 50.')
-    def forge(category, post):
+    @click.option('--comment', default=500, help='Quantity of comments, default is 500.')
+    def forge(category, post, comment):
         """Generate fake data."""
-        from app.fakes import fake_admin, fake_categories, fake_posts, fake_links
+        from app.fakes import fake_admin, fake_categories, fake_posts, fake_links, fake_comments
 
         db.drop_all()
         db.create_all()
@@ -84,3 +95,8 @@ def register_commands(app):
 
         click.echo('Generating links...')
         fake_links()
+
+        click.echo('Generating {} comments...'.format(comment))
+        fake_comments(comment)
+
+        click.echo('Done.')

@@ -13,7 +13,7 @@ def index():
     per_page = current_app.config['POSTS_PER_PAGE']
     pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page, per_page, False)
     posts = pagination.items
-    return render_template('blog/index.html', title='Personal-Blog', pagination=pagination, posts=posts)
+    return render_template('blog/index.html', pagination=pagination, posts=posts)
 
 
 @blog_bp.route('/about')
@@ -37,7 +37,7 @@ def show_post(post_id):
     post = Post.query.get_or_404(post_id)
     page = request.args.get('page', 1, type=int)
     per_page = current_app.config['BLOG_COMMENT_PER_PAGE']
-    pagination = Comment.query.with_parent(post).order_by(Comment.timestamp.desc()).paginate(page, per_page, False)
+    pagination = Comment.query.with_parent(post).filter_by(reviewed=True).order_by(Comment.timestamp.asc()).paginate(page, per_page, False)
     # pagination = Comment.query.with_parent(post).filter_by(post_id=post.id).order_by(Comment.timestamp.desc()).paginate(page, per_page, False)
     comments = pagination.items
 
@@ -58,7 +58,7 @@ def show_post(post_id):
         email = form.email.data
         site = form.site.data
         body = form.body.data
-        comment = Comment(author=author, email=email, site=site, body=body, from_admin=from_admin, post=post)
+        comment = Comment(author=author, email=email, site=site, body=body, from_admin=from_admin, post=post, reviewed=reviewed)
         replied_id = request.args.get('reply')
 
         if replied_id:
