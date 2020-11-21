@@ -44,8 +44,9 @@ def create_app(config_name=None):
     return app
 
 
-login.login_view = 'login'
-login.login_message = 'Please log in'
+login.login_view = 'auth.login'
+login.login_message = 'Please log in to access this page.'
+login.login_message_category = 'warning'
 @login.user_loader
 def load_user(id):
     from app.models import Admin

@@ -13,14 +13,18 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        user = Admin.query.filter_by(username=form.username.data).first()
-        if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password', 'warning')
-            return redirect(url_for('auth.login'))
+        username=form.username.data
+        password=form.password.data
+        remember=form.remember.data
 
-        login_user(user, remember=form.remember_me.data)
-        flash('Login successful', 'success')
-        return redirect(url_for('blog.index'))
+        admin = Admin.query.filter_by(username=username).first()
+        if admin and admin.check_password(password):
+            login_user(admin, remember)
+            flash('Welcome back.', 'success')
+            return redirect(url_for('blog.index'))
+        else:
+            flash('Invalid username or password', 'warning')
+
     return render_template('auth/login.html', form=form)
 
 
@@ -28,4 +32,5 @@ def login():
 @login_required
 def logout():
     logout_user()
+    flash('Logout success.', 'info')
     return redirect(url_for('blog.index'))
