@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
+from flask_wtf import CSRFProtect
 
 
 db = SQLAlchemy()
@@ -14,6 +15,7 @@ migrate = Migrate()
 bootstrap = Bootstrap()
 moment = Moment()
 login = LoginManager()
+csrf = CSRFProtect()
 
 
 def create_app(config_name=None):
@@ -29,6 +31,7 @@ def create_app(config_name=None):
     bootstrap.init_app(app)
     moment.init_app(app)
     login.init_app(app)
+    csrf.init_app(app)
 
     from app.blog import blog_bp
     app.register_blueprint(blog_bp)
