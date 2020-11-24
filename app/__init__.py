@@ -39,6 +39,8 @@ def create_app(config_name=None):
     app.register_blueprint(auth_bp)
     from app.errors import errors_bp
     app.register_blueprint(errors_bp)
+    from app.admin import admin_bp
+    app.register_blueprint(admin_bp)
 
     register_shell_context(app)
     register_template_context(app)

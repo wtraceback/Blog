@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, HiddenField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, \
+    TextAreaField, HiddenField, ValidationError
 from wtforms.validators import DataRequired, Email, Length, Optional, URL
+from app.models import Category
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -21,3 +23,18 @@ class AdminCommentForm(CommentForm):
     author = HiddenField()
     email = HiddenField()
     site = HiddenField()
+
+
+class CategoryForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(), Length(1, 30)])
+    submit = SubmitField()
+
+    def validate_name(self, field):
+        if Category.query.filter_by(name=field.data).first():
+            raise ValidationError('Name already in user.')
+
+
+class LinkForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(), Length(1, 30)])
+    url = StringField('URL', validators=[DataRequired(), URL(), Length(1, 255)])
+    submit = SubmitField()
