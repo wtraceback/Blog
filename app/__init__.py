@@ -8,6 +8,7 @@ from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_wtf import CSRFProtect
+from flask_ckeditor import CKEditor
 
 
 db = SQLAlchemy()
@@ -16,6 +17,7 @@ bootstrap = Bootstrap()
 moment = Moment()
 login = LoginManager()
 csrf = CSRFProtect()
+ckeditor = CKEditor()
 
 
 def create_app(config_name=None):
@@ -32,6 +34,7 @@ def create_app(config_name=None):
     moment.init_app(app)
     login.init_app(app)
     csrf.init_app(app)
+    ckeditor.init_app(app)
 
     from app.blog import blog_bp
     app.register_blueprint(blog_bp)

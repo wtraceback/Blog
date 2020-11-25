@@ -1,6 +1,23 @@
 {% extends 'base.html' %}
 {% from 'bootstrap/form.html' import render_form %}
 
+{% block title %}
+    New Post
+{% endblock %}
+
+{% block header %}
+    <h1>
+        New Post
+    </h1>
+{% endblock %}
+
 {% block page_content %}
-    new post
+    {{ render_form(form) }}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript" src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}"></script>
+    <!-- <script src="//cdn.ckeditor.com/4.9.2/standard/ckeditor.js"></script> -->
+    <!-- {{ ckeditor.load() }} -->
 {% endblock %}

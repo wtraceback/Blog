@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, \
-    TextAreaField, HiddenField, ValidationError
+    TextAreaField, HiddenField, ValidationError, SelectField
 from wtforms.validators import DataRequired, Email, Length, Optional, URL
+from flask_ckeditor import CKEditorField
 from app.models import Category
 
 class LoginForm(FlaskForm):
@@ -23,6 +24,17 @@ class AdminCommentForm(CommentForm):
     author = HiddenField()
     email = HiddenField()
     site = HiddenField()
+
+
+class PostForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired(), Length(1, 60)])
+    category = SelectField('Category', coerce=int, default=1)
+    body = CKEditorField('Body', validators=[DataRequired()])
+    submit = SubmitField()
+
+    def __init__(self, *args, **kwargs):
+        super(PostForm, self).__init__(*args, **kwargs)
+        self.category.choices = [(category.id, category.name) for category in Category.query.order_by(Category.name).all()]
 
 
 class CategoryForm(FlaskForm):

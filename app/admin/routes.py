@@ -1,15 +1,26 @@
 from flask import render_template, flash, redirect, url_for
 from flask_login import login_required
 from app.admin import admin_bp
-from app.forms import CategoryForm, LinkForm
-from app.models import Category, Link
+from app.forms import PostForm, CategoryForm, LinkForm
+from app.models import Post, Category, Link
 from app import db
 
 
 @admin_bp.route('/post/new', methods=['GET', 'POST'])
 @login_required
 def new_post():
-    return render_template('admin/new_post.html')
+    form = PostForm()
+    if form.validate_on_submit():
+        title = form.title.data
+        category = Category.query.get(form.category.data)
+        body = form.body.data
+        post = Post(title=title, body=body, category=category)
+        db.session.add(post)
+        db.session.commit()
+        flash('Post created.', 'success')
+        return redirect(url_for('blog.show_post', post_id=post.id))
+
+    return render_template('admin/new_post.html', form=form)
 
 
 @admin_bp.route('/category/new', methods=['GET', 'POST'])
