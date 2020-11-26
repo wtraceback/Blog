@@ -49,6 +49,39 @@ def new_link():
         db.session.add(link)
         db.session.commit()
         flash('Link created.', 'success')
-        return redirect(url_for('admin.new_link'))
+        return redirect(url_for('admin.manage_link'))
 
     return render_template('admin/new_link.html', form=form)
+
+
+@admin_bp.route('/link/manage')
+@login_required
+def manage_link():
+    return render_template('admin/manage_link.html')
+
+
+@admin_bp.route('/link/<int:link_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_link(link_id):
+    link = Link.query.get_or_404(link_id)
+    form = LinkForm()
+    if form.validate_on_submit():
+        link.name = form.name.data
+        link.url = form.url.data
+        db.session.commit()
+        flash('Link updated.', 'success')
+        return redirect(url_for('admin.manage_link'))
+
+    form.name.data = link.name
+    form.url.data = link.url
+    return render_template('admin/edit_link.html', form=form)
+
+
+@admin_bp.route('/link/<int:link_id>/delete', methods=['POST'])
+@login_required
+def delete_link(link_id):
+    link = Link.query.get_or_404(link_id)
+    db.session.delete(link)
+    db.session.commit()
+    flash('Link deleted.', 'success')
+    return redirect(url_for('admin.manage_link'))

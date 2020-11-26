@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/form.html' import render_form %}
+
+{% block title %}
+    Manage Link
+{% endblock %}
+
+{% block header %}
+    <h1>
+        Links
+        <small class="text-muted">
+            {{ links|length }}
+        </small>
+        <span class="float-right">
+            <a class="btn btn-primary btn-sm" href="{{ url_for('admin.new_link') }}">
+                New Link
+            </a>
+        </span>
+    </h1>
+{% endblock %}
+
+{% block page_content %}
+    <div class="row">
+        {% if links %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">No.</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">URL</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for link in links %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ link.name }}</td>
+                            <td>
+                                <a href="{{ link.url }}" target="_blank">
+                                    {{ link.url }}
+                                </a>
+                            </td>
+                            <td>
+                                <a class="btn btn-info btn-sm" href="{{ url_for('admin.edit_link', link_id=link.id) }}">
+                                    Edit
+                                </a>
+                                <form class="d-inline" action="{{ url_for('admin.delete_link', link_id=link.id) }}" method="post">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="tip">
+                <h5>
+                    No links.
+                </h5>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
