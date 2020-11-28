@@ -33,9 +33,46 @@ def new_category():
         db.session.add(category)
         db.session.commit()
         flash('Category created.', 'success')
-        return redirect(url_for('admin.new_category'))
+        return redirect(url_for('admin.manage_category'))
 
     return render_template('admin/new_category.html', form=form)
+
+
+@admin_bp.route('/category/manage')
+@login_required
+def manage_category():
+    return render_template('admin/manage_category.html')
+
+
+@admin_bp.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_category(category_id):
+    category = Category.query.get_or_404(category_id)
+    form = CategoryForm()
+    if category.id == 1:
+        flash('You can not edit the default category.', 'warning')
+        return redirect(url_for('blog.index'))
+    if form.validate_on_submit():
+        category.name = form.name.data
+        db.session.commit()
+        flash('Category updated.', 'success')
+        return redirect(url_for('admin.manage_category'))
+
+    form.name.data = category.name
+    return render_template('admin/edit_category.html', form=form)
+
+
+@admin_bp.route('/category/<int:category_id>/delete', methods=['POST'])
+@login_required
+def delete_category(category_id):
+    category = Category.query.get_or_404(category_id)
+    if category.id == 1:
+        flash('You can not delete the default category.', 'warning')
+        return redirect(url_for('blog.index'))
+
+    category.delete()
+    flash('Category deleted.', 'success')
+    return redirect(url_for('admin.manage_category'))
 
 
 @admin_bp.route('/link/new', methods=['GET', 'POST'])

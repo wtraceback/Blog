@@ -49,6 +49,14 @@ class Category(db.Model):
     def __repr__(self):
         return '<Category {}>'.format(self.name)
 
+    def delete(self):
+        default_category = Category.query.get(1)
+        posts = self.posts[:]
+        for post in posts:
+            post.category = default_category
+        db.session.delete(self)
+        db.session.commit()
+
 
 class Link(db.Model):
     id = db.Column(db.Integer, primary_key=True)
