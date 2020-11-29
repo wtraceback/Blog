@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for, request, current_app
 from flask_login import login_required
 from app.admin import admin_bp
 from app.forms import PostForm, CategoryForm, LinkForm
@@ -21,6 +21,59 @@ def new_post():
         return redirect(url_for('blog.show_post', post_id=post.id))
 
     return render_template('admin/new_post.html', form=form)
+
+
+@admin_bp.route('/post/manage')
+@login_required
+def manage_post():
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['POSTS_PER_PAGE']
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page, per_page, False)
+    posts = pagination.items
+    return render_template('admin/manage_post.html', pagination=pagination, posts=posts)
+
+
+@admin_bp.route('/post/<int:post_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    form = PostForm()
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.category = Category.query.get(form.category.data)
+        post.body = form.body.data
+        db.session.commit()
+        flash('Post updated.', 'success')
+        return redirect(url_for('blog.show_post', post_id=post.id))
+
+    form.title.data = post.title
+    form.category.data = post.category_id
+    form.body.data = post.body
+    return render_template('admin/edit_post.html', form=form)
+
+
+@admin_bp.route('/post/<int:post_id>/delete', methods=['POST'])
+@login_required
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    db.session.delete(post)
+    db.session.commit()
+    flash('Post deleted.', 'success')
+    return redirect(url_for('admin.manage_post'))
+
+
+@admin_bp.route('/post/<int:post_id>/set-comment', methods=['POST'])
+@login_required
+def set_comment(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.can_comment:
+        post.can_comment = False
+        flash('Comment disabled.', 'success')
+    else:
+        post.can_comment = True
+        flash('Comment enabled.', 'success')
+    db.session.commit()
+    return redirect(url_for('admin.manage_post'))
 
 
 @admin_bp.route('/category/new', methods=['GET', 'POST'])

@@ -134,9 +134,17 @@
                 </div>
             {% endif %}
 
-            <div id="comment-form">
-                {{ render_form(form, action=request.full_path) }}
-            </div>
+            {% if post.can_comment %}
+                <div id="comment-form">
+                    {{ render_form(form, action=request.full_path) }}
+                </div>
+            {% else %}
+                <div class="tip">
+                    <h5>
+                        Comment Disabled.
+                    </h5>
+                </div>
+            {% endif %}
         </div>
         <div class="col-sm-4 pl-4">
             {% include "blog/_sidebar.html" %}

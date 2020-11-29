@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+
+{% block title %}
+    Manage Posts
+{% endblock %}
+
+{% block header %}
+    <h1>
+        Posts
+        <small class="text-muted">
+            {{ pagination.total }}
+        </small>
+        <span class="float-right">
+            <a class="btn btn-primary btn-sm" href="{{ url_for('admin.new_post') }}">
+                New Post
+            </a>
+        </span>
+    </h1>
+{% endblock %}
+
+{% block page_content %}
+    <div class="row">
+        {% if posts %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">No.</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Comments</th>
+                        <th scope="col">Words</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                        <tr>
+                            <td>{{ loop.index + (pagination.page - 1) * config.POSTS_PER_PAGE }}</td>
+                            <td>
+                                <a href="{{ url_for('blog.show_post', post_id=post.id) }}" target="_blank">
+                                    {{ post.title }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('blog.show_category', category_id=post.category_id) }}" target="_blank">
+                                    {{ post.category.name }}
+                                </a>
+                            </td>
+                            <td>
+                                {{ moment(post.timestamp).format('LL') }}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('blog.show_post', post_id=post.id) }}#comments" target="_blank">
+                                    {{ post.comments|length }}
+                                </a>
+                            </td>
+                            <td>
+                                {{ post.body|length }}
+                            </td>
+                            <td>
+                                <form class="d-inline" action="{{ url_for('admin.set_comment', post_id=post.id) }}" method="post">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                    <button type="submit" class="btn btn-warning btn-sm">
+                                        {% if post.can_comment %}
+                                            Disable
+                                        {% else %}
+                                            Enable
+                                        {% endif %}
+                                        Comment
+                                    </button>
+                                </form>
+                                <a class="btn btn-info btn-sm" href="{{ url_for('admin.edit_post', post_id=post.id) }}">
+                                    Edit
+                                </a>
+                                <form class="d-inline" action="{{ url_for('admin.delete_post', post_id=post.id) }}" method="post">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {{ render_pagination(pagination) }}
+        {% else %}
+            <div class="tip">
+                <h5>
+                    No posts.
+                </h5>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
