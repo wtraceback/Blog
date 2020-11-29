@@ -4,6 +4,7 @@ from flask_login import login_required
 from app.auth import auth_bp
 from app.forms import LoginForm
 from app.models import Admin
+from app.utils import redirect_back
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -21,7 +22,7 @@ def login():
         if admin and admin.check_password(password):
             login_user(admin, remember)
             flash('Welcome back.', 'success')
-            return redirect(url_for('blog.index'))
+            return redirect_back()
         else:
             flash('Invalid username or password', 'warning')
 
@@ -33,4 +34,4 @@ def login():
 def logout():
     logout_user()
     flash('Logout success.', 'info')
-    return redirect(url_for('blog.index'))
+    return redirect_back()

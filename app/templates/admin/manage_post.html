@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% from 'bootstrap/pagination.html' import render_pagination %}
+{% import 'macros.html' as macros %}
 
 {% block title %}
     Manage Posts
@@ -60,7 +61,7 @@
                                 {{ post.body|length }}
                             </td>
                             <td>
-                                <form class="d-inline" action="{{ url_for('admin.set_comment', post_id=post.id) }}" method="post">
+                                <form class="d-inline" action="{{ url_for('admin.set_comment', post_id=post.id, next=request.full_path) }}" method="post">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                     <button type="submit" class="btn btn-warning btn-sm">
                                         {% if post.can_comment %}
@@ -74,7 +75,7 @@
                                 <a class="btn btn-info btn-sm" href="{{ url_for('admin.edit_post', post_id=post.id) }}">
                                     Edit
                                 </a>
-                                <form class="d-inline" action="{{ url_for('admin.delete_post', post_id=post.id) }}" method="post">
+                                <form class="d-inline" action="{{ url_for('admin.delete_post', post_id=post.id, next=request.full_path) }}" method="post">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
                                         Delete
@@ -88,11 +89,7 @@
 
             {{ render_pagination(pagination) }}
         {% else %}
-            <div class="tip">
-                <h5>
-                    No posts.
-                </h5>
-            </div>
+            {{ macros.render_empty_message('No posts.') }}
         {% endif %}
     </div>
 {% endblock %}

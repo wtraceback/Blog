@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% import 'macros.html' as macros %}
 
 {% block title %}
     Manage Links
@@ -56,11 +57,7 @@
                 </tbody>
             </table>
         {% else %}
-            <div class="tip">
-                <h5>
-                    No links.
-                </h5>
-            </div>
+            {{ macros.render_empty_message('No links.') }}
         {% endif %}
     </div>
 {% endblock %}

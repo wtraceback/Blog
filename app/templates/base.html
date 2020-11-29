@@ -88,9 +88,9 @@
                 <p class="float-right">
                     <small>
                         {% if current_user.is_anonymous %}
-                            <a href="{{ url_for('auth.login') }}">Login</a>
+                            <a href="{{ url_for('auth.login', next=request.full_path) }}">Login</a>
                         {% else %}
-                            <a href="{{ url_for('auth.logout') }}">Logout</a>
+                            <a href="{{ url_for('auth.logout', next=request.full_path) }}">Logout</a>
                         {% endif %}
                     </small>
                 </p>

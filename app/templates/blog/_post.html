@@ -28,7 +28,6 @@
         </div>
     {% endfor %}
 {% else %}
-    <div class="tip">
-        <h5>No posts yet.</h5>
-    </div>
+    {% import 'macros.html' as macros %}
+    {{ macros.render_empty_message('No posts yet.') }}
 {% endif %}

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% from 'bootstrap/form.html' import render_form %}
 {% from 'bootstrap/pagination.html' import render_pagination %}
+{% import 'macros.html' as macros %}
 
 {% block title %}
     {{ post.title }}
@@ -103,7 +104,7 @@
                                     <p class="mb-1">{{ comment.body }}</p>
 
                                     <div class="float-right">
-                                        <a class="btn btn-light btn-sm" href="{{ url_for('.reply_comment', comment_id=comment.id) }}">
+                                        <a class="btn btn-light btn-sm" href="{{ url_for('blog.reply_comment', comment_id=comment.id) }}">
                                             Reply
                                         </a>
                                     </div>
@@ -111,11 +112,7 @@
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <div class="tip">
-                            <h5>
-                                No comments.
-                            </h5>
-                        </div>
+                        {{ macros.render_empty_message('No comments.') }}
                     {% endif %}
                 </div>
 
@@ -139,11 +136,7 @@
                     {{ render_form(form, action=request.full_path) }}
                 </div>
             {% else %}
-                <div class="tip">
-                    <h5>
-                        Comment Disabled.
-                    </h5>
-                </div>
+                {{ macros.render_empty_message('Comment Disabled.') }}
             {% endif %}
         </div>
         <div class="col-sm-4 pl-4">

@@ -4,6 +4,7 @@ from app.admin import admin_bp
 from app.forms import PostForm, CategoryForm, LinkForm
 from app.models import Post, Category, Link
 from app import db
+from app.utils import redirect_back
 
 
 @admin_bp.route('/post/new', methods=['GET', 'POST'])
@@ -59,7 +60,7 @@ def delete_post(post_id):
     db.session.delete(post)
     db.session.commit()
     flash('Post deleted.', 'success')
-    return redirect(url_for('admin.manage_post'))
+    return redirect_back()
 
 
 @admin_bp.route('/post/<int:post_id>/set-comment', methods=['POST'])
@@ -73,7 +74,7 @@ def set_comment(post_id):
         post.can_comment = True
         flash('Comment enabled.', 'success')
     db.session.commit()
-    return redirect(url_for('admin.manage_post'))
+    return redirect_back()
 
 
 @admin_bp.route('/category/new', methods=['GET', 'POST'])

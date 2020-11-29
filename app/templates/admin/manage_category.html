@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% import 'macros.html' as macros %}
 
 {% block title %}
     Manage Categories
@@ -64,11 +65,7 @@
                 The articles under this category will be moved to the default category.
             </p>
         {% else %}
-            <div class="tip">
-                <h5>
-                    No categories.
-                </h5>
-            </div>
+            {{ macros.render_empty_message('No categories.') }}
         {% endif %}
     </div>
 {% endblock %}
