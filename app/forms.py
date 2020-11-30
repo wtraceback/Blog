@@ -12,6 +12,15 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Log In')
 
 
+class SettingForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(), Length(1, 30)])
+    email = StringField('Email', validators=[DataRequired(), Email(), Length(1, 254)])
+    blog_title = StringField('Blog Title', validators=[DataRequired(), Length(1, 60)])
+    blog_sub_title = StringField('Blog Sub Title', validators=[DataRequired(), Length(1, 100)])
+    about = CKEditorField('About Page', validators=[DataRequired()])
+    submit = SubmitField()
+
+
 class CommentForm(FlaskForm):
     author = StringField('Name', validators=[DataRequired(), Length(1, 30)])
     email = StringField('Email', validators=[DataRequired(), Email(), Length(1, 254)])

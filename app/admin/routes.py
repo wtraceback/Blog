@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request, current_app
-from flask_login import login_required
+from flask_login import login_required, current_user
 from app.admin import admin_bp
-from app.forms import PostForm, CategoryForm, LinkForm
+from app.forms import PostForm, CategoryForm, LinkForm, SettingForm
 from app.models import Post, Category, Link
 from app import db
 from app.utils import redirect_back
@@ -176,3 +176,25 @@ def delete_link(link_id):
     db.session.commit()
     flash('Link deleted.', 'success')
     return redirect(url_for('admin.manage_link'))
+
+
+@admin_bp.route('/settings', methods=['GET', 'POST'])
+@login_required
+def settings():
+    form = SettingForm()
+    if form.validate_on_submit():
+        current_user.name = form.name.data
+        current_user.email = form.email.data
+        current_user.blog_title = form.blog_title.data
+        current_user.blog_sub_title = form.blog_sub_title.data
+        current_user.about = form.about.data
+        db.session.commit()
+        flash('Setting updated.', 'success')
+        return redirect(url_for('blog.index'))
+
+    form.name.data = current_user.name
+    form.email.data = current_user.email
+    form.blog_title.data = current_user.blog_title
+    form.blog_sub_title.data = current_user.blog_sub_title
+    form.about.data = current_user.about
+    return render_template('admin/settings.html', form=form)
