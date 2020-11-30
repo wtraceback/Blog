@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request, current_ap
 from flask_login import login_required, current_user
 from app.admin import admin_bp
 from app.forms import PostForm, CategoryForm, LinkForm, SettingForm
-from app.models import Post, Category, Link
+from app.models import Post, Category, Link, Comment
 from app import db
 from app.utils import redirect_back
 
@@ -176,6 +176,46 @@ def delete_link(link_id):
     db.session.commit()
     flash('Link deleted.', 'success')
     return redirect(url_for('admin.manage_link'))
+
+
+@admin_bp.route('/comment/manage')
+@login_required
+def manage_comment():
+    # 'all' 'unread' 'admin'
+    filter_rule = request.args.get('filter', 'all')
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['BLOG_COMMENT_PER_PAGE']
+    if filter_rule == 'all':
+        filtered_comments = Comment.query
+    elif filter_rule == 'unread':
+        filtered_comments = Comment.query.filter_by(reviewed=False)
+    else:
+        # 'admin'
+        filtered_comments = Comment.query.filter_by(from_admin=True)
+
+    pagination = filtered_comments.order_by(Comment.timestamp.desc()).paginate(page, per_page, False)
+    comments = pagination.items
+    return render_template('admin/manage_comment.html', pagination=pagination, comments=comments)
+
+
+@admin_bp.route('/comment/<int:comment_id>/approve', methods=['POST'])
+@login_required
+def approve_comment(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    comment.reviewed = True
+    db.session.commit()
+    flash('Comment published.', 'success')
+    return redirect_back()
+
+
+@admin_bp.route('/comment/<int:comment_id>/delete', methods=['POST'])
+@login_required
+def delete_comment(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    db.session.delete(comment)
+    db.session.commit()
+    flash('Comment deleted.', 'success')
+    return redirect_back()
 
 
 @admin_bp.route('/settings', methods=['GET', 'POST'])

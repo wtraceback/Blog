@@ -4,7 +4,7 @@ from flask import Flask
 from config import config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_wtf import CSRFProtect
@@ -71,14 +71,19 @@ def register_shell_context(app):
 
 
 def register_template_context(app):
-    from app.models import Admin, Category, Link
+    from app.models import Admin, Category, Link, Comment
 
     @app.context_processor
     def make_template_context():
         admin = Admin.query.first()
         categories = Category.query.order_by(Category.name).all()
         links = Link.query.order_by(Link.name).all()
-        return dict(admin=admin, categories=categories, links=links)
+        if current_user.is_authenticated:
+            unread_comments = Comment.query.filter_by(reviewed=False).count()
+        else:
+            unread_comments = None
+
+        return dict(admin=admin, categories=categories, links=links, unread_comments=unread_comments)
 
 
 def register_commands(app):
