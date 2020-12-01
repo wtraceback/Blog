@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block styles %}
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/cosmo.min.css') }}">
 {% endblock%}
@@ -94,7 +95,7 @@
         {% endblock %}
 
         {% block footer %}
-            <footer class="mt-4 py-3 text-muted border-top">
+            <footer class="mt-4 pt-2 pb-4 text-muted border-top">
                 <p class="float-left">
                     <small>
                         &copy; 2020

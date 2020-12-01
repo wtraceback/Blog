@@ -28,11 +28,35 @@
             {{ post.body|safe }}
             <hr>
 
-            <div class="share-dialog">
+            <div class="button-dialog">
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#postLinkModal">
                     Share
                 </button>
+
+                {% if current_user.is_authenticated %}
+                    <a class="btn btn-info btn-sm" href="{{ url_for('admin.edit_post', post_id=post.id) }}">Edit</a>
+
+                    <form class="d-inline" action="{{ url_for('admin.delete_post', post_id=post.id, next=url_for('blog.index')) }}" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
+                            Delete
+                        </button>
+                    </form>
+
+                    <form class="d-inline" action="{{ url_for('admin.set_comment', post_id=post.id, next=request.full_path) }}" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <button type="submit" class="btn btn-warning btn-sm">
+                            {% if post.can_comment %}
+                                Disabled
+                            {% else %}
+                                Enable
+                            {% endif %}
+                            Comment
+                        </button>
+                    </form>
+                {% endif %}
+
                 <!-- Modal -->
                 <div class="modal fade" id="postLinkModal" tabindex="-1" role="dialog" aria-labelledby="postLinkModalLabel">
                     <div class="modal-dialog" role="document">
@@ -107,6 +131,17 @@
                                         <a class="btn btn-light btn-sm" href="{{ url_for('blog.reply_comment', comment_id=comment.id) }}">
                                             Reply
                                         </a>
+                                        
+                                        {% if current_user.is_authenticated %}
+                                            <a class="btn btn-light btn-sm" href="mailto:{{ comment.email }}">Email</a>
+
+                                            <form class="d-inline" action="{{ url_for('admin.delete_comment', comment_id=comment.id, next=request.full_path) }}" method="post">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        {% endif %}
                                     </div>
                                 </li>
                             {% endfor %}
