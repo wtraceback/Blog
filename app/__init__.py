@@ -88,6 +88,37 @@ def register_template_context(app):
 
 def register_commands(app):
     @app.cli.command()
+    @click.option('--username', prompt=True, help="The username used to login.")
+    @click.option('--password', prompt=True, hide_input=True,
+                    confirmation_prompt=True, help="The password used to login.")
+    def initdb(username, password):
+        """Initialize the administrator user and default category"""
+        from app.models import Admin, Category
+
+        click.echo('Initialize the database...')
+        db.drop_all()
+        db.create_all()
+
+        click.echo('creating the temporary administrator account')
+        admin = Admin(
+            username='Admin',
+            email='temporary@example.com',
+            blog_title='Blog',
+            blog_sub_title='Blog sub title.',
+            name=username,
+            about='Anything about you.'
+        )
+        admin.set_password(password)
+        db.session.add(admin)
+
+        click.echo('Creating the default category...')
+        category = Category(name='Default')
+        db.session.add(category)
+
+        db.session.commit()
+        click.echo('Done.')
+
+    @app.cli.command()
     @click.option('--category', default=10, help='Quantity of categories, default is 10.')
     @click.option('--post', default=50, help='Quantity of posts, default is 50.')
     @click.option('--comment', default=500, help='Quantity of comments, default is 500.')

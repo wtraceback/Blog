@@ -58,7 +58,7 @@
                                 </a>
                             </td>
                             <td>
-                                {{ post.body|length }}
+                                {{ post.body|striptags|length }}
                             </td>
                             <td>
                                 <form class="d-inline" action="{{ url_for('admin.set_comment', post_id=post.id, next=request.full_path) }}" method="post">
