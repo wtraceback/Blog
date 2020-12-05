@@ -21,6 +21,8 @@ class Config(object):
     BLOG_UPLOAD_PATH = os.path.join(basedir, 'uploads')
     BLOG_ALLOWED_IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
 
+    DEBUG_TB_INTERCEPT_REDIRECTS = False
+
     @staticmethod
     def init_app(app):
         pass

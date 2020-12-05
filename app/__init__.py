@@ -9,6 +9,7 @@ from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_wtf import CSRFProtect
 from flask_ckeditor import CKEditor
+from flask_debugtoolbar import DebugToolbarExtension
 
 
 db = SQLAlchemy()
@@ -18,6 +19,7 @@ moment = Moment()
 login = LoginManager()
 csrf = CSRFProtect()
 ckeditor = CKEditor()
+toolbar = DebugToolbarExtension()
 
 
 def create_app(config_name=None):
@@ -35,15 +37,16 @@ def create_app(config_name=None):
     login.init_app(app)
     csrf.init_app(app)
     ckeditor.init_app(app)
+    toolbar.init_app(app)
 
     from app.blog import blog_bp
     app.register_blueprint(blog_bp)
     from app.auth import auth_bp
-    app.register_blueprint(auth_bp)
+    app.register_blueprint(auth_bp, url_prefix='/auth')
     from app.errors import errors_bp
-    app.register_blueprint(errors_bp)
+    app.register_blueprint(errors_bp, url_prefix='/errors')
     from app.admin import admin_bp
-    app.register_blueprint(admin_bp)
+    app.register_blueprint(admin_bp, url_prefix='/admin')
 
     register_shell_context(app)
     register_template_context(app)
