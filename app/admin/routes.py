@@ -1,10 +1,13 @@
-from flask import render_template, flash, redirect, url_for, request, current_app
+from flask import render_template, flash, redirect, url_for, request, \
+    current_app, send_from_directory
+import os
 from flask_login import login_required, current_user
+from flask_ckeditor import upload_success, upload_fail
 from app.admin import admin_bp
 from app.forms import PostForm, CategoryForm, LinkForm, SettingForm
 from app.models import Post, Category, Link, Comment
 from app import db
-from app.utils import redirect_back
+from app.utils import redirect_back, allowed_file
 
 
 @admin_bp.route('/post/new', methods=['GET', 'POST'])
@@ -238,3 +241,22 @@ def settings():
     form.blog_sub_title.data = current_user.blog_sub_title
     form.about.data = current_user.about
     return render_template('admin/settings.html', form=form)
+
+
+@admin_bp.route('/uploads/<path:filename>')
+def get_image(filename):
+    path = current_app.config['BLOG_UPLOAD_PATH']
+    return send_from_directory(path, filename)
+
+
+@admin_bp.route('/upload', methods=['POST'])
+def upload_image():
+    f = request.files.get('upload')
+
+    if not allowed_file(f.filename):
+        return upload_fail('Image only!')
+
+    path = current_app.config['BLOG_UPLOAD_PATH']
+    f.save(os.path.join(path, f.filename))
+    url = url_for('admin.get_image', filename=f.filename)
+    return upload_success(url=url)

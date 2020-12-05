@@ -133,3 +133,5 @@ dmypy.json
 *.db
 *.sqlite
 *.sqlite3
+uploads/*
+!uploads/.gitkeep

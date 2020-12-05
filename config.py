@@ -16,6 +16,11 @@ class Config(object):
     POSTS_PER_PAGE = 10
     BLOG_COMMENT_PER_PAGE = 10
 
+    CKEDITOR_ENABLE_CSRF = True
+    CKEDITOR_FILE_UPLOADER = 'admin.upload_image'
+    BLOG_UPLOAD_PATH = os.path.join(basedir, 'uploads')
+    BLOG_ALLOWED_IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
+
     @staticmethod
     def init_app(app):
         pass
