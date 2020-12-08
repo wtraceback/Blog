@@ -10,9 +10,9 @@ def fake_admin():
     admin = Admin(
         username='admin',
         email='whxcer@example.com',
-        blog_title='Personal Blog',
+        blog_title='Blog',
         blog_sub_title='blog sub title, something.',
-        name='Whxcer',
+        name='Mr.Wang',
         about="um, The man was lazy and didn't leave a profile"
     )
     admin.set_password('123456')

@@ -91,6 +91,19 @@ def register_template_context(app):
 
 def register_commands(app):
     @app.cli.command()
+    @click.option('--drop', is_flag=True, help='Create after drop.')
+    def initdb(drop):
+        """Initialize the database."""
+
+        if drop:
+            click.confirm('This operation will delete the database, do you want to continue?', abort=True)
+            db.drop_all()
+            click.echo('Drop tables.')
+
+        db.create_all()
+        click.echo('Initialized database.')
+		
+    @app.cli.command()
     @click.option('--username', prompt=True, help="The username used to login.")
     @click.option('--password', prompt=True, hide_input=True,
                     confirmation_prompt=True, help="The password used to login.")
@@ -99,24 +112,31 @@ def register_commands(app):
         from app.models import Admin, Category
 
         click.echo('Initialize the database...')
-        db.drop_all()
         db.create_all()
 
-        click.echo('creating the temporary administrator account')
-        admin = Admin(
-            username='Admin',
-            email='temporary@example.com',
-            blog_title='Blog',
-            blog_sub_title='Blog sub title.',
-            name=username,
-            about='Anything about you.'
-        )
+        admin = Admin.query.first()
+        if admin is not None:
+            click.echo('The administrator already exists, updating...')
+            admin.username = username
+            admin.set_password(password)
+        else:
+            click.echo('Creating the temporary administrator account...')
+            admin = Admin(
+                username=username,
+                email='whxcer@example.com',
+                blog_title='Blog',
+                blog_sub_title='blog sub title, something.',
+                name='Mr.Wang',
+                about="um, The man was lazy and didn't leave a profile"
+            )
         admin.set_password(password)
         db.session.add(admin)
 
-        click.echo('Creating the default category...')
-        category = Category(name='Default')
-        db.session.add(category)
+        category = Category.query.first()
+        if category is None:
+            click.echo('Creating the default category...')
+            category = Category(name='Default')
+            db.session.add(category)
 
         db.session.commit()
         click.echo('Done.')
