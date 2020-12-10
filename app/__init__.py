@@ -102,16 +102,16 @@ def register_commands(app):
 
         db.create_all()
         click.echo('Initialized database.')
-		
+
     @app.cli.command()
     @click.option('--username', prompt=True, help="The username used to login.")
     @click.option('--password', prompt=True, hide_input=True,
                     confirmation_prompt=True, help="The password used to login.")
-    def initdb(username, password):
+    def initadmin(username, password):
         """Initialize the administrator user and default category"""
         from app.models import Admin, Category
 
-        click.echo('Initialize the database...')
+        click.echo('Initializing the database...')
         db.create_all()
 
         admin = Admin.query.first()

@@ -6,12 +6,12 @@ from datetime import datetime
 
 class Admin(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(254), index=True, unique=True)
+    username = db.Column(db.String(64), index=True)
     password_hash = db.Column(db.String(128))
+    name = db.Column(db.String(30))
+    email = db.Column(db.String(254), index=True)
     blog_title = db.Column(db.String(60))
     blog_sub_title = db.Column(db.String(100))
-    name = db.Column(db.String(30))
     about = db.Column(db.Text)
 
     def __repr__(self):
