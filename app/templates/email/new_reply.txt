@@ -1,0 +1,5 @@
+New reply for the comment you left in post {{ comment.post.title }}, you can be viewed through the following link:
+
+{{ url_for('blog.show_post', post_id=comment.post_id, _external=True) }}#comments
+
+Do not reply this email

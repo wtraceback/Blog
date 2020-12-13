@@ -1,0 +1,5 @@
+New comment in post {{ post.title }}, you can be viewed through the following link:
+
+{{ url_for('blog.show_post', post_id=post.id, _external=True) }}#comments
+
+Do not reply this email.

@@ -1,9 +1,10 @@
 from flask import current_app, render_template, request, flash, redirect, url_for
-from app.blog import blog_bp
-from app.models import Post, Category, Comment
-from app.forms import CommentForm, AdminCommentForm
-from app import db
 from flask_login import current_user
+from app import db
+from app.blog import blog_bp
+from app.email import send_new_comment_email, send_new_reply_email
+from app.forms import CommentForm, AdminCommentForm
+from app.models import Post, Category, Comment
 
 
 @blog_bp.route('/')
@@ -64,7 +65,7 @@ def show_post(post_id):
         if replied_id:
             replied_comment = Comment.query.get_or_404(replied_id)
             comment.replied = replied_comment
-            # 发邮件通知
+            send_new_reply_email(replied_comment)
         db.session.add(comment)
         db.session.commit()
 
@@ -72,7 +73,8 @@ def show_post(post_id):
             flash('Comment published.', 'success')
         else:
             flash('Thanks, your comment will be publish after reviewed.', 'info')
-            # 发邮件通知
+            send_new_comment_email(post)
+
 
         return redirect(url_for('blog.show_post', post_id=post_id))
 

@@ -1,5 +1,7 @@
 import os
 import click
+import logging
+from logging.handlers import SMTPHandler, RotatingFileHandler
 from flask import Flask
 from config import config
 from flask_sqlalchemy import SQLAlchemy
@@ -10,6 +12,7 @@ from flask_moment import Moment
 from flask_wtf import CSRFProtect
 from flask_ckeditor import CKEditor
 from flask_debugtoolbar import DebugToolbarExtension
+from flask_mail import Mail
 
 
 db = SQLAlchemy()
@@ -20,6 +23,7 @@ login = LoginManager()
 csrf = CSRFProtect()
 ckeditor = CKEditor()
 toolbar = DebugToolbarExtension()
+mail = Mail()
 
 
 def create_app(config_name=None):
@@ -30,24 +34,9 @@ def create_app(config_name=None):
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
-    db.init_app(app)
-    migrate.init_app(app, db)
-    bootstrap.init_app(app)
-    moment.init_app(app)
-    login.init_app(app)
-    csrf.init_app(app)
-    ckeditor.init_app(app)
-    toolbar.init_app(app)
-
-    from app.blog import blog_bp
-    app.register_blueprint(blog_bp)
-    from app.auth import auth_bp
-    app.register_blueprint(auth_bp, url_prefix='/auth')
-    from app.errors import errors_bp
-    app.register_blueprint(errors_bp, url_prefix='/errors')
-    from app.admin import admin_bp
-    app.register_blueprint(admin_bp, url_prefix='/admin')
-
+    register_logging(app)
+    register_extensions(app)
+    register_blueprints(app)
     register_shell_context(app)
     register_template_context(app)
     register_commands(app)
@@ -62,6 +51,66 @@ login.login_message_category = 'warning'
 def load_user(id):
     from app.models import Admin
     return Admin.query.get(int(id))
+
+
+def register_logging(app):
+    if not app.debug and not app.testing:
+        # 通过电子邮件发送日志
+        auth = None
+        if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
+            auth = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
+
+        secure = None
+        if app.config['MAIL_USE_TLS']:
+            secure = ()
+
+        mail_handler = SMTPHandler(
+            mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
+            fromaddr='no-reply@' + app.config['MAIL_SERVER'],
+            toaddrs=app.config['ADMINS'],
+            subject='Blog Failure',
+            credentials=auth,
+            secure=secure
+        )
+        mail_handler.setLevel(logging.ERROR)
+        app.logger.addHandler(mail_handler)
+
+        # 记录日志到文件中
+        if not os.path.exists('logs'):
+            # 创建 logs 日志目录
+            os.mkdir('logs')
+        file_handler = RotatingFileHandler('logs/blog.log', maxBytes=1024 * 10 * 1024, backupCount=10)
+        formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
+        file_handler.setFormatter(formatter)
+        file_handler.setLevel(logging.INFO)
+        app.logger.addHandler(file_handler)
+
+        # 服务器每次启动时都会在日志中写入一行。这些日志数据将告诉你服务器何时重新启动过。
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('Blog startup')
+
+
+def register_extensions(app):
+    db.init_app(app)
+    migrate.init_app(app, db)
+    bootstrap.init_app(app)
+    moment.init_app(app)
+    login.init_app(app)
+    csrf.init_app(app)
+    ckeditor.init_app(app)
+    toolbar.init_app(app)
+    mail.init_app(app)
+
+
+def register_blueprints(app):
+    from app.blog import blog_bp
+    app.register_blueprint(blog_bp)
+    from app.auth import auth_bp
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    from app.errors import errors_bp
+    app.register_blueprint(errors_bp, url_prefix='/errors')
+    from app.admin import admin_bp
+    app.register_blueprint(admin_bp, url_prefix='/admin')
 
 
 def register_shell_context(app):
