@@ -1,7 +1,7 @@
 from flask import render_template
+from flask_wtf.csrf import CSRFError
 from app import db
 from app.errors import errors_bp
-from flask_wtf.csrf import CSRFError
 
 
 @errors_bp.app_errorhandler(400)

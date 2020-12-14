@@ -14,9 +14,9 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        username=form.username.data
-        password=form.password.data
-        remember=form.remember.data
+        username = form.username.data
+        password = form.password.data
+        remember = form.remember.data
 
         admin = Admin.query.filter_by(username=username).first()
         if admin and admin.check_password(password):

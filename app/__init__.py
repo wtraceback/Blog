@@ -47,6 +47,8 @@ def create_app(config_name=None):
 login.login_view = 'auth.login'
 login.login_message = 'Please log in to access this page.'
 login.login_message_category = 'warning'
+
+
 @login.user_loader
 def load_user(id):
     from app.models import Admin
@@ -154,8 +156,7 @@ def register_commands(app):
 
     @app.cli.command()
     @click.option('--username', prompt=True, help="The username used to login.")
-    @click.option('--password', prompt=True, hide_input=True,
-                    confirmation_prompt=True, help="The password used to login.")
+    @click.option('--password', prompt=True, hide_input=True, confirmation_prompt=True, help="The password used to login.")
     def initadmin(username, password):
         """Initialize the administrator user and default category"""
         from app.models import Admin, Category

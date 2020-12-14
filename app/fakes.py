@@ -1,4 +1,5 @@
 from faker import Faker
+from sqlalchemy.exc import IntegrityError
 import random
 from app import db
 from app.models import Admin, Post, Category, Link, Comment
@@ -36,10 +37,10 @@ def fake_categories(count=10):
 def fake_posts(count=50):
     for i in range(count):
         post = Post(
-            title = fake.sentence(),
-            body = fake.text(1600),
-            category_id = Category.query.get(random.randint(1, Category.query.count())).id,
-            timestamp = fake.date_time_this_year()
+            title=fake.sentence(),
+            body=fake.text(1600),
+            category_id=Category.query.get(random.randint(1, Category.query.count())).id,
+            timestamp=fake.date_time_this_year()
         )
 
         db.session.add(post)
