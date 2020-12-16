@@ -4,7 +4,7 @@ import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 from flask import Flask
 from config import config
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, get_debug_queries
 from flask_migrate import Migrate
 from flask_login import LoginManager, current_user
 from flask_bootstrap import Bootstrap
@@ -40,6 +40,7 @@ def create_app(config_name=None):
     register_shell_context(app)
     register_template_context(app)
     register_commands(app)
+    register_request_handlers(app)
 
     return app
 
@@ -218,3 +219,17 @@ def register_commands(app):
         fake_comments(comment)
 
         click.echo('Done.')
+
+
+def register_request_handlers(app):
+    @app.after_request
+    def query_profiler(response):
+        # 在请求结束时，记录慢查询
+        for query in get_debug_queries():
+            # 用时判断
+            if query.duration >= app.config['DATABASE_QUERY_TIMEOUT']:
+                app.logger.warning(
+                    'SLOW QUERY: {}\nParameters: {}\nDuration: {}\nContext: {}\n'.format(
+                        query.statement, query.parameters, query.duration, query.context))
+
+        return response

@@ -34,6 +34,10 @@ class Config(object):
     # ADMINS 配置变量：将接收到错误报告的电子邮件地址列表
     ADMINS = ['whxcer@outlook.com']
 
+    # flask-sqlalchemy 显式地启用查询记录相关的配置变量值
+    SQLALCHEMY_RECORD_QUERIES = True
+    DATABASE_QUERY_TIMEOUT = 1
+
     @staticmethod
     def init_app(app):
         pass
