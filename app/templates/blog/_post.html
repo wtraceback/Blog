@@ -28,6 +28,6 @@
         </div>
     {% endfor %}
 {% else %}
-    {% import 'macros.html' as macros %}
-    {{ macros.render_empty_message('No posts yet.') }}
+    {% import 'macros.html' as macros with context %}
+    {{ macros.render_empty_message(message='No posts yet.', is_post=True) }}
 {% endif %}
